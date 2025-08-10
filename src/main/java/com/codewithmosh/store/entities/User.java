@@ -1,12 +1,11 @@
 package com.codewithmosh.store.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -15,55 +14,32 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "users")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "firstName", nullable = false)
+    private String firstName;
 
-    @Column(name = "email")
+    @Column(name = "lastName", nullable = false)
+    private String lastName;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false, unique = true)
     private String password;
+
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     private List<Address> addresses = new ArrayList<>();
 
-    public void addAddress(Address address) {
-        addresses.add(address);
-        address.setUser(this);
-    }
-
-    public void removeAddress(Address address) {
-        addresses.remove(address);
-        address.setUser(null);
-    }
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private Profile profile;
-
-    @ManyToMany
-    @JoinTable(
-        name = "wishlist",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private Set<Product> favoriteProducts = new HashSet<>();
-
-    public void addFavoriteProduct(Product product) {
-        favoriteProducts.add(product);
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "name = " + name + ", " +
-                "email = " + email + ")";
-    }
 }
