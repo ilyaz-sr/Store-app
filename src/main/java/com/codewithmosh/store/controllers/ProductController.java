@@ -7,6 +7,8 @@ import com.codewithmosh.store.repositories.CategoryRepository;
 import com.codewithmosh.store.repositories.ProductRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +26,15 @@ public class ProductController {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
+    private static final Logger logger = LogManager.getLogger(LoggingController.class);
 
     @PostMapping("/getallproducts")
-    public List<ProductDto> getAllProducts(@RequestBody Byte categoryId) {
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll().stream().map(productMapper::toDto).toList();
+    }
+
+    @PostMapping("/getproductsbycategory")
+    public List<ProductDto> getProductsbyCategory(@RequestBody Byte categoryId) {
         List<Product> products;
         if (categoryId != null) {
             products = productRepository.findByCategoryId(categoryId);
@@ -62,14 +70,12 @@ public class ProductController {
     }
 
     @PostMapping("/updateproduct")
-    public ResponseEntity<ProductDto> updateProduct(
-            @RequestBody Long id,
-            @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
         var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
         if (category == null) {
             return ResponseEntity.badRequest().build();
         }
-        var product = productRepository.findById(id).orElse(null);
+        var product = productRepository.findById(productDto.getId()).orElse(null);
 
         if (product == null) {
             return ResponseEntity.notFound().build();

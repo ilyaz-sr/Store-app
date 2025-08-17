@@ -5,6 +5,7 @@ import com.codewithmosh.store.entities.Role;
 import com.codewithmosh.store.entities.User;
 import com.codewithmosh.store.mappers.UserMapper;
 import com.codewithmosh.store.repositories.UserRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Map;
 @AllArgsConstructor
 @RequestMapping("/users")
 @Tag(name = "User")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -48,9 +50,8 @@ public class UserController {
         try {
             User newUser = userMapper.fromUserDto(userDto);
             newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-            newUser.setRole(Role.USER);
+            newUser.setRole(newUser.getRole() != null ? newUser.getRole() : Role.USER);
             User savedUser = userRepository.save(newUser);
-
             UserDto savedUserDto = userMapper.userToUserDto(savedUser);
 
             return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);

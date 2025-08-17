@@ -10,6 +10,8 @@ import com.codewithmosh.store.services.CartService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ import java.util.UUID;
 @Tag(name = "Carts")
 public class CartController {
     private final CartService cartService;
+    private static final Logger logger = LogManager.getLogger(LoggingController.class);
+
 
     @PostMapping("/createcart")
     public ResponseEntity<CartDto> createCart(UriComponentsBuilder uriBuilder) {
@@ -42,7 +46,7 @@ public class CartController {
 
     @PostMapping("/getcartbyid")
     public CartDto getCart(@RequestBody UUID cartId) {
-
+        logger.trace("Getting cart by id {}", cartId);
         return cartService.getCart(cartId);
     }
 

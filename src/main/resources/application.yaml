@@ -20,3 +20,6 @@ spring:
   stripe:
     secretKey: ${STRIPE_SECRET_KEY}
     webhookSecretKey: ${STRIPE_WEBHOOK_SECRET_KEY}
+  logging:
+    level:
+      com.codewithmosh.store.controllers.LoggingController: TRACE
