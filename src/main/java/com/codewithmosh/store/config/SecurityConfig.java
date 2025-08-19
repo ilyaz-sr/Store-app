@@ -59,8 +59,9 @@ public class SecurityConfig {
                     .requestMatchers("/v3/api-docs/**").permitAll()
                     .requestMatchers("/auth/login").permitAll()
                     .requestMatchers("/auth/refresh").permitAll()
-                    .requestMatchers("/logging").permitAll()
-                    .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                    .requestMatchers("/products/createproduct").hasRole(Role.ADMIN.name())
+                    .requestMatchers("/products/deleteproduct").hasRole(Role.ADMIN.name())
+                    .requestMatchers("/products/updateproduct").hasRole(Role.ADMIN.name())
                     .anyRequest().authenticated())
                     .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                     .exceptionHandling(c -> {

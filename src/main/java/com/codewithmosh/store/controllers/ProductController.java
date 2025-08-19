@@ -1,14 +1,13 @@
 package com.codewithmosh.store.controllers;
 
 import com.codewithmosh.store.dtos.ProductDto;
+import com.codewithmosh.store.entities.Category;
 import com.codewithmosh.store.entities.Product;
 import com.codewithmosh.store.mappers.ProductMapper;
 import com.codewithmosh.store.repositories.CategoryRepository;
 import com.codewithmosh.store.repositories.ProductRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +45,7 @@ public class ProductController {
 
     @PostMapping("/getproductbyid")
     public ResponseEntity<ProductDto> getProduct(@RequestBody Long id) {
-        var product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
@@ -55,12 +54,13 @@ public class ProductController {
 
     @PostMapping("/createproduct")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
-        var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
+        System.out.println("createProduct request body: " + productDto);
+        Category category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
         if (category == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        var product = productMapper.toEntity(productDto);
+        Product product = productMapper.toEntity(productDto);
         product.setCategory(category);
         productRepository.save(product);
         productDto.setId(product.getId());
@@ -70,11 +70,11 @@ public class ProductController {
 
     @PostMapping("/updateproduct")
     public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
-        var category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
+        Category category = categoryRepository.findById(productDto.getCategoryId()).orElse(null);
         if (category == null) {
             return ResponseEntity.badRequest().build();
         }
-        var product = productRepository.findById(productDto.getId()).orElse(null);
+        Product product = productRepository.findById(productDto.getId()).orElse(null);
 
         if (product == null) {
             return ResponseEntity.notFound().build();
@@ -90,7 +90,7 @@ public class ProductController {
 
     @PostMapping("/deleteproduct")
     public ResponseEntity<Void> deleteProduct(@RequestBody Long id) {
-        var product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
 
         if (product == null) {
             return ResponseEntity.notFound().build();
