@@ -26,7 +26,7 @@ import java.util.UUID;
 @Tag(name = "Carts")
 public class CartController {
     private final CartService cartService;
-    private static final Logger logger = LogManager.getLogger(LoggingController.class);
+    private static final Logger logger = LogManager.getLogger(CartController.class);
 
 
     @PostMapping("/createcart")

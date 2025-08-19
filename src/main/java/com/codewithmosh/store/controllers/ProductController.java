@@ -26,7 +26,6 @@ public class ProductController {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
-    private static final Logger logger = LogManager.getLogger(LoggingController.class);
 
     @PostMapping("/getallproducts")
     public List<ProductDto> getAllProducts() {
