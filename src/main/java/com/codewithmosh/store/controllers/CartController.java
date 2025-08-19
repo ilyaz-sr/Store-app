@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,14 +32,14 @@ public class CartController {
 
     @PostMapping("/createcart")
     public ResponseEntity<CartDto> createCart(UriComponentsBuilder uriBuilder) {
-        var cartDto = cartService.createCart();
-        var uri = uriBuilder.path("/carts/{id}").buildAndExpand(cartDto.getId()).toUri();
+        CartDto cartDto = cartService.createCart();
+        URI uri = uriBuilder.path("/carts/{id}").buildAndExpand(cartDto.getId()).toUri();
         return ResponseEntity.created(uri).body(cartDto);
     }
 
     @PostMapping("/addtocart")
     public ResponseEntity<CartItemDto> addToCart(@RequestBody AddToCartRequest request) {
-        var cartItemDto = cartService.addToCart(request.getCartId(), request.getProductId(), request.getQuantity());
+        CartItemDto cartItemDto = cartService.addToCart(request.getCartId(), request.getProductId(), request.getQuantity());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(cartItemDto);
 

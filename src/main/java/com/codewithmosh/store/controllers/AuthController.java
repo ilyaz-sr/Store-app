@@ -4,8 +4,10 @@ import com.codewithmosh.store.config.JwtConfig;
 import com.codewithmosh.store.dtos.JwtResource;
 import com.codewithmosh.store.dtos.LoginRequest;
 import com.codewithmosh.store.dtos.UserDto;
+import com.codewithmosh.store.entities.User;
 import com.codewithmosh.store.mappers.UserMapper;
 import com.codewithmosh.store.repositories.UserRepository;
+import com.codewithmosh.store.services.Jwt;
 import com.codewithmosh.store.services.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +38,9 @@ public class AuthController {
     public ResponseEntity<JwtResource> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        Jwt accessToken = jwtService.generateAccessToken(user);
+        Jwt refreshToken = jwtService.generateRefreshToken(user);
 
         var cookie = new Cookie("refreshToken", refreshToken.toString());
         cookie.setHttpOnly(true);
@@ -51,28 +54,28 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<JwtResource> refresh(@CookieValue(value = "refreshToken") String refreshToken) {
-        var jwt = jwtService.parseToken(refreshToken);
+        Jwt jwt = jwtService.parseToken(refreshToken);
         if (jwt == null || jwt.isExpired()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        var user = userRepository.findById(jwt.getUserId()).orElseThrow();
-        var accessToken = jwtService.generateAccessToken(user);
+        User user = userRepository.findById(jwt.getUserId()).orElseThrow();
+        Jwt accessToken = jwtService.generateAccessToken(user);
 
         return ResponseEntity.ok(new JwtResource(accessToken.toString()));
     }
 
     @PostMapping("/me")
     public ResponseEntity<UserDto> me() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
 
-        var user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
-        var userDto = userMapper.userToUserDto(user);
+        UserDto userDto = userMapper.userToUserDto(user);
 
         return ResponseEntity.ok(userDto);
     }
