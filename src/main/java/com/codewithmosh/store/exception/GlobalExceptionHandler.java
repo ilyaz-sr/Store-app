@@ -1,4 +1,4 @@
-package com.codewithmosh.store.controllers;
+package com.codewithmosh.store.exception;
 
 import com.codewithmosh.store.dtos.ErrorDto;
 import org.springframework.http.ResponseEntity;

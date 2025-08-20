@@ -91,12 +91,5 @@ public class UserController {
             default:
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-//        if(userRepository.findById(id).isPresent()) {
-//            userRepository.deleteById(id);
-//            return ResponseEntity.ok("User with ID " + id + " deleted successfully.");
-//        }else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
     }
 }
