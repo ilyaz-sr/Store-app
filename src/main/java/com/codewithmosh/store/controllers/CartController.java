@@ -1,9 +1,6 @@
 package com.codewithmosh.store.controllers;
 
-import com.codewithmosh.store.dtos.AddToCartRequest;
-import com.codewithmosh.store.dtos.CartDto;
-import com.codewithmosh.store.dtos.CartItemDto;
-import com.codewithmosh.store.dtos.UpdateCartItemRequest;
+import com.codewithmosh.store.dtos.*;
 import com.codewithmosh.store.exception.CartNotFoundException;
 import com.codewithmosh.store.exception.ProductNotFoundException;
 import com.codewithmosh.store.services.CartService;
@@ -52,14 +49,14 @@ public class CartController {
     }
 
     @PostMapping("/updateitem")
-    public CartItemDto updateItem(@RequestBody UUID cartId, @RequestBody Long productId, @Valid @RequestBody UpdateCartItemRequest request) {
+    public CartItemDto updateItem(@Valid @RequestBody UpdateCartItemRequest request) {
 
-        return cartService.updateItem(cartId, productId, request.getQuantity());
+        return cartService.updateItem(request.getCartId(), request.getProductId(), request.getQuantity());
     }
 
     @PostMapping("/removeitem")
-    public ResponseEntity<?> removeItem(@RequestBody UUID cartId, @RequestBody Long productId) {
-        cartService.removeItem(cartId, productId);
+    public ResponseEntity<?> removeItem(@RequestBody CartandProductRequest request) {
+        cartService.removeItem(request.getCartId(), request.getProductId());
 
         return ResponseEntity.noContent().build();
     }
